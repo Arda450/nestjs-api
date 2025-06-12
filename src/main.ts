@@ -7,4 +7,4 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(process.env.PORT ?? 3333);
 }
-bootstrap();
+bootstrap().catch((err) => console.error('Error starting server:', err));

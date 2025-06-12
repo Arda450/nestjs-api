@@ -1,6 +1,16 @@
-import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpStatus,
+  HttpCode,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
+import { AuthDto, ChangePasswordDto } from './dto';
+import { JwtGuard } from './guard';
+import { GetUser } from './decorator';
 // @Controller('auth'), so nestJS knows this is a controller
 // controller calls the service
 // service is a class that contains the logic
@@ -30,5 +40,15 @@ export class AuthController {
   // signin im controller returned die signin func vom auth.service.ts
   signin(@Body() dto: AuthDto) {
     return this.authService.signin(dto);
+  }
+
+  @UseGuards(JwtGuard)
+  @HttpCode(HttpStatus.OK)
+  @Patch('change-password')
+  changePassword(
+    @GetUser('id') userId: number,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    return this.authService.changePassword(userId, dto);
   }
 }
