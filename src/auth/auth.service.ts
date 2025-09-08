@@ -94,11 +94,11 @@ export class AuthService {
     };
 
     // holt den geheimen schlüssel aus der .env datei (JWT_SECRET)
-    const secret = this.config.get('JWT_SECRET');
+    const secret = this.config.get<string>('JWT_SECRET');
     // signAsync comes from jwt service
     //this.jwt.signAsync returns a promise<string>
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '15m', // 15 minutes
+      expiresIn: '1h',
       secret: secret,
     });
     // Der Token wird für Authentifizierung bei weiteren requests verwendet

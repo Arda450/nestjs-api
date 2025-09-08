@@ -23,7 +23,7 @@ export class PrismaService extends PrismaClient {
   // dient dazu, die Datenbank für die Tests zu bereinigen
   cleanDb() {
     return this.$transaction([
-      this.bookmark.deleteMany(),
+      this.transaction.deleteMany(),
       this.user.deleteMany(),
     ]);
   }

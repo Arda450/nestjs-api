@@ -27,22 +27,101 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  bookmarks Bookmark[]
+  // Relations
+  transactions Transaction[]
+  categories   Category[]
+  budgets      Budget[]
 
   @@map("users")
 }
 
-model Bookmark {
-  id        Int      @id @default(autoincrement())
-
-  title String
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String
   description String?
-
+  color       String?  // Hex color für UI
+  icon        String?  // Icon name für UI
+  type        String   // "expense", "income"
+  isActive    Boolean  @default(true)
+  
+  // Keywords für Smart Categorization
+  keywords    String[] // Array von Keywords für automatische Zuordnung
+  
+  // Relations
+  userId       Int
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  link String
+  
+  @@unique([userId, name]) // Eindeutige Namen pro User
+  @@map("categories")
+}
 
-  userId Int
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@map("bookmarks")
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  amount      Float    // Negative für Ausgaben, Positive für Einnahmen
+  description String
+  date        DateTime @default(now())
+  type        String   // "expense", "income"
+  
+  // Auto-categorization Info
+  isAutoCategorized Boolean @default(false)
+  matchedKeyword    String? // Welches Keyword zur Auto-Kategorisierung führte
+  
+  // Relations
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("transactions")
+}
+
+model Budget {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  
+  // Budget Details
+  amount      Float    // Budget Limit
+  period      String   // "monthly", "weekly", "yearly"
+  startDate   DateTime
+  endDate     DateTime?
+  
+  // Budget Status
+  isActive    Boolean  @default(true)
+  alertAt     Float?   // Alert wenn % erreicht (z.B. 0.8 für 80%)
+  
+  // Relations
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("budgets")
+}
+
+// Für Analytics und Tracking
+model BudgetAlert {
+  id        Int      @id @default(autoincrement())
+  budgetId  Int
+  message   String
+  type      String   // "warning", "exceeded", "approaching"
+  threshold Float    // Bei welchem Prozentsatz ausgelöst
+  isRead    Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("budget_alerts")
 }

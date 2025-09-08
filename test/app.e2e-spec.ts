@@ -5,7 +5,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { AuthDto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
-import { CreateBookmarkDto, EditBookmarkDto } from 'src/bookmark/dto';
+import { CreateTransactionDto, EditTransactionDto } from 'src/transaction/dto';
 
 // definiert eine Test-Suite namens 'App e2e'
 describe('App e2e', () => {
@@ -36,7 +36,7 @@ describe('App e2e', () => {
 
   afterAll(() => {
     // schließt die Anwendung nach allen Tests
-    app.close();
+    return app.close();
   });
 
   // let's create some tests
@@ -153,12 +153,12 @@ describe('App e2e', () => {
       });
     });
 
-    describe('Bookmark', () => {
-      describe('Get empty bookmarks', () => {
-        it('should get empty bookmarks', () => {
+    describe('Transaction', () => {
+      describe('Get empty transactions', () => {
+        it('should get empty transactions', () => {
           return pactum
             .spec()
-            .get('/bookmarks')
+            .get('/transactions')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -166,28 +166,30 @@ describe('App e2e', () => {
             .expectBody([]);
         });
       });
-      describe('Create bookmark', () => {
-        const dto: CreateBookmarkDto = {
-          title: 'First Bookmark',
-          link: 'https://www.google.com',
+      describe('Create transaction', () => {
+        const dto: CreateTransactionDto = {
+          amount: -45.5,
+          description: 'Rewe Einkauf',
+          type: 'expense',
+          category: 'Food',
         };
-        it('should create bookmark', () => {
+        it('should create transaction', () => {
           return pactum
             .spec()
-            .post('/bookmarks')
+            .post('/transactions')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
             .withBody(dto)
             .expectStatus(201)
-            .stores('bookmarkId', 'id');
+            .stores('transactionId', 'id');
         });
       });
-      describe('Get bookmarks', () => {
-        it('should get bookmarks', () => {
+      describe('Get transactions', () => {
+        it('should get transactions', () => {
           return pactum
             .spec()
-            .get('/bookmarks')
+            .get('/transactions')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -195,54 +197,55 @@ describe('App e2e', () => {
             .expectJsonLength(1);
         });
       });
-      describe('Get bookmark by id', () => {
-        it('should get bookmark by id', () => {
+      describe('Get transaction by id', () => {
+        it('should get transaction by id', () => {
           return pactum
             .spec()
-            .get('/bookmarks/{id}')
-            .withPathParams('id', '$S{bookmarkId}')
+            .get('/transactions/{id}')
+            .withPathParams('id', '$S{transactionId}')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
             .expectStatus(200)
-            .expectBodyContains('$S{bookmarkId}');
+            .expectBodyContains('$S{transactionId}');
         });
       });
-      describe('Edit bookmark by id', () => {
-        it('should edit bookmark by id', () => {
-          const dto: EditBookmarkDto = {
-            title: 'Updated Bookmark',
-            description: 'Updated Description',
+      describe('Edit transaction by id', () => {
+        it('should edit transaction by id', () => {
+          const dto: EditTransactionDto = {
+            amount: -50.0,
+            description: 'Rewe Einkauf (korrigiert)',
+            category: 'Groceries',
           };
           return pactum
             .spec()
-            .patch('/bookmarks/{id}')
-            .withPathParams('id', '$S{bookmarkId}')
+            .patch('/transactions/{id}')
+            .withPathParams('id', '$S{transactionId}')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
             .withBody(dto)
             .expectStatus(200)
-            .expectBodyContains(dto.title)
-            .expectBodyContains(dto.description);
+            .expectBodyContains(dto.description)
+            .expectBodyContains(dto.category);
         });
       });
-      describe('Delete bookmark by id', () => {
-        it('should delete bookmark by id', () => {
+      describe('Delete transaction by id', () => {
+        it('should delete transaction by id', () => {
           return pactum
             .spec()
-            .delete('/bookmarks/{id}')
-            .withPathParams('id', '$S{bookmarkId}')
+            .delete('/transactions/{id}')
+            .withPathParams('id', '$S{transactionId}')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
             .expectStatus(204);
         });
 
-        it('should get empty bookmarks after deletion', () => {
+        it('should get empty transactions after deletion', () => {
           return pactum
             .spec()
-            .get('/bookmarks')
+            .get('/transactions')
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })

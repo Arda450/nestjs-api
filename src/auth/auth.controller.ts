@@ -35,7 +35,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
-  // die signin func im controller ist nicht dieselbe signin func wie im service
+  // die signin func im controller ist nicht dieselbe signin func wie im auth service
   // die signin func im controller ist eine andere funktion
   // signin im controller returned die signin func vom auth.service.ts
   signin(@Body() dto: AuthDto) {

@@ -15,8 +15,10 @@ export class UserService {
         ...dto,
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+    // extract hash from user object and put everything else into userWithoutHash and return it
     const { hash, ...userWithoutHash } = user;
+    void hash; // Variable als verwendet markieren
 
     return userWithoutHash;
   }

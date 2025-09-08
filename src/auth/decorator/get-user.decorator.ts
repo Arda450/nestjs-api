@@ -8,7 +8,7 @@ export const GetUser = createParamDecorator(
     }
 
     if (data) {
-      return request.user[data];
+      return (request.user as Record<string, unknown>)[data];
     }
     return request.user;
   },
