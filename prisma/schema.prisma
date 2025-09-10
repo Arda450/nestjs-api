@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,115 +7,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  hash      String
-  firstName String?
-  lastName  String?
-  role      String   @default("user")
-  isActive  Boolean  @default(true)
-  lastLogin DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
-  transactions Transaction[]
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  hash         String
+  firstName    String?
+  lastName     String?
+  role         String        @default("user")
+  isActive     Boolean       @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   categories   Category[]
-  budgets      Budget[]
+  transactions Transaction[]
 
   @@map("users")
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  color       String?  // Hex color für UI
-  icon        String?  // Icon name für UI
-  type        String   // "expense", "income"
-  isActive    Boolean  @default(true)
-  
-  // Keywords für Smart Categorization
-  keywords    String[] // Array von Keywords für automatische Zuordnung
-  
-  // Relations
+  id           Int           @id @default(autoincrement())
+  name         String
+  type         FinanceType
+  isActive     Boolean       @default(true)
   userId       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
-  budgets      Budget[]
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@unique([userId, name]) // Eindeutige Namen pro User
+
+  @@unique([userId, name])
   @@map("categories")
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
-  amount      Float    // Negative für Ausgaben, Positive für Einnahmen
+  id          Int       @id @default(autoincrement())
+  amount      Float
   description String
-  date        DateTime @default(now())
-  type        String   // "expense", "income"
-  
-  // Auto-categorization Info
-  isAutoCategorized Boolean @default(false)
-  matchedKeyword    String? // Welches Keyword zur Auto-Kategorisierung führte
-  
-  // Relations
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  categoryId Int?
-  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+  date        DateTime  @default(now())
+  userId      Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("transactions")
 }
 
-model Budget {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  
-  // Budget Details
-  amount      Float    // Budget Limit
-  period      String   // "monthly", "weekly", "yearly"
-  startDate   DateTime
-  endDate     DateTime?
-  
-  // Budget Status
-  isActive    Boolean  @default(true)
-  alertAt     Float?   // Alert wenn % erreicht (z.B. 0.8 für 80%)
-  
-  // Relations
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  categoryId Int?
-  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("budgets")
-}
-
-// Für Analytics und Tracking
-model BudgetAlert {
-  id        Int      @id @default(autoincrement())
-  budgetId  Int
-  message   String
-  type      String   // "warning", "exceeded", "approaching"
-  threshold Float    // Bei welchem Prozentsatz ausgelöst
-  isRead    Boolean  @default(false)
-  
-  createdAt DateTime @default(now())
-  
-  @@map("budget_alerts")
+enum FinanceType {
+  EXPENSE
+  INCOME
 }

@@ -11,6 +11,9 @@ export class TransactionService {
       where: {
         userId,
       },
+      include: {
+        category: true, // ← Kategorie-Details immer mit laden
+      },
       orderBy: {
         date: 'desc', // Neueste zuerst
       },
@@ -23,17 +26,28 @@ export class TransactionService {
         id: transactionId,
         userId,
       },
+      include: {
+        category: true,
+      },
     });
   }
 
+  // INSERT INTO transactions (userId, amount, description, categoryId, createdAt, updatedAt)
+  // VALUES (123, 25.50, 'Mittagessen im Restaurant', 3, NOW(), NOW())
+  // RETURNING *;
+
   async createTransaction(userId: number, dto: CreateTransactionDto) {
     const transaction = await this.prisma.transaction.create({
+      // db insert
       data: {
         userId,
         ...dto, // destructuring dto, damit alle properties von dto in das transaction objekt übernommen werden
       },
+      include: {
+        category: true,
+      },
     });
-    return transaction;
+    return transaction; //  gibt die erstellte transaction zurück
   }
 
   async editTransactionById(

@@ -1,37 +1,14 @@
-import {
-  IsString,
-  IsOptional,
-  IsArray,
-  IsIn,
-  IsBoolean,
-} from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsEnum } from 'class-validator';
+import { FinanceType } from '@prisma/client';
 
 export class EditCategoryDto {
   @IsString()
   @IsOptional()
   name?: string;
 
-  @IsString()
+  @IsEnum(FinanceType)
   @IsOptional()
-  description?: string;
-
-  @IsString()
-  @IsOptional()
-  color?: string;
-
-  @IsString()
-  @IsOptional()
-  icon?: string;
-
-  @IsString()
-  @IsIn(['expense', 'income'])
-  @IsOptional()
-  type?: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  keywords?: string[];
+  type?: FinanceType;
 
   @IsBoolean()
   @IsOptional()

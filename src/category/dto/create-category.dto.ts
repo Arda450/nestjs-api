@@ -1,34 +1,15 @@
-import {
-  IsString,
-  IsOptional,
-  IsArray,
-  IsIn,
-  IsNotEmpty,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+
+export enum FinanceType {
+  EXPENSE = 'EXPENSE',
+  INCOME = 'INCOME',
+}
 
 export class CreateCategoryDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsString()
-  @IsOptional()
-  color?: string; // Hex color
-
-  @IsString()
-  @IsOptional()
-  icon?: string;
-
-  @IsString()
-  @IsIn(['expense', 'income'])
-  type: string;
-
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  keywords?: string[]; // Keywords für Smart Categorization
+  @IsEnum(FinanceType)
+  type: FinanceType;
 }

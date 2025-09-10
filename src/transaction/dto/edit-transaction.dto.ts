@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber, IsIn } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsInt } from 'class-validator';
 
 export class EditTransactionDto {
   @IsNumber()
@@ -9,12 +9,7 @@ export class EditTransactionDto {
   @IsOptional()
   description?: string;
 
-  @IsString()
-  @IsIn(['expense', 'income'])
   @IsOptional()
-  type?: string;
-
-  @IsString()
-  @IsOptional()
-  category?: string;
+  @IsInt()
+  categoryId?: number;
 }

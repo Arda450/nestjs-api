@@ -35,12 +35,12 @@ export class TransactionController {
     return this.transactionService.getTransactionById(userId, transactionId);
   }
 
-  @Post()
+  @Post() //reagiert auf http post request
   createTransaction(
-    @GetUser('id') userId: number,
-    @Body() dto: CreateTransactionDto,
+    @GetUser('id') userId: number, //get the user id from the jwt token
+    @Body() dto: CreateTransactionDto, // extrahiert und validiert den request body
   ) {
-    return this.transactionService.createTransaction(userId, dto);
+    return this.transactionService.createTransaction(userId, dto); // service aufrufen
   }
 
   @Patch(':id')

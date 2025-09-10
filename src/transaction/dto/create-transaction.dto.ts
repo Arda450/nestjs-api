@@ -3,7 +3,7 @@ import {
   IsString,
   IsNotEmpty,
   IsNumber,
-  IsIn,
+  IsInt,
 } from 'class-validator';
 
 export class CreateTransactionDto {
@@ -15,11 +15,7 @@ export class CreateTransactionDto {
   @IsNotEmpty()
   description: string;
 
-  @IsString()
-  @IsIn(['expense', 'income'])
-  type: string;
-
-  @IsString()
   @IsOptional()
-  category?: string;
+  @IsInt()
+  categoryId?: number;
 }
